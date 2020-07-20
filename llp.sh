@@ -1,0 +1,1 @@
+export ARCH=arm CROSS_COMPILE=/media/tennycent/f2b2ed4f-1360-46b0-a194-1826dded3118/home/tennycent/pc9715/android5.1/myandroid/prebuilts/gcc/linux-x86/arm/arm-eabi-4.6/bin/arm-eabi- LOADADDR=0x10008000

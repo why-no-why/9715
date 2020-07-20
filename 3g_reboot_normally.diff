@@ -1,0 +1,30 @@
+diff --git a/arch/arm/mach-imx/mach-imx6q.c b/arch/arm/mach-imx/mach-imx6q.c
+old mode 100644
+new mode 100755
+index d02d47c7..c9d85c9b
+--- a/arch/arm/mach-imx/mach-imx6q.c
++++ b/arch/arm/mach-imx/mach-imx6q.c
+@@ -335,15 +335,22 @@ static void __init imx6q_mini_pcie_init(void)
+ {
+ 	struct device_node *np = NULL;
+ 	int ret, power_on_gpio;
++
+ 	np = of_find_node_by_name(NULL, "minipcie_ctrl");
+ 	if (!np)
+ 		return;
+ 
+ 	power_on_gpio = of_get_named_gpio(np, "power-on-gpio", 0);
++    desc = gpio_to_desc(power_on_gpio);
+ 	if (gpio_is_valid(power_on_gpio)) {
+-		ret = gpio_request_one(power_on_gpio, GPIOF_OUT_INIT_HIGH,
++		/********* why 1 add start ********/
++		//why 2019-10-30 change for 3g reboot normally
++		ret = gpio_request_one(power_on_gpio, GPIOF_OUT_INIT_LOW,
+ 			"miniPCIE Power On");
++       		gpio_export(power_on_gpio, 0); ///sys/class/gpio/gpio83
++		/********* why 1 add end   ********/
+ 		pr_warn("!!request miniPCIE Power On gpio\n");
++        
+ 		if (ret)
+ 			pr_warn("failed to request miniPCIE Power On gpio\n");
+ 		//fj_ltls add for free powe_on_gpio 2018.03.31

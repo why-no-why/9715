@@ -1,0 +1,468 @@
+--- Vllp_ltls20160512.patch	2016-05-12 11:15:41.108649143 +0800
++++ Vllp_ltls20160604.patch	2016-06-04 14:05:09.774267224 +0800
+@@ -12,7 +12,7 @@
+  
+  	lvds-channel@1 {
+ diff --git a/arch/arm/boot/dts/imx6qdl-sabresd.dtsi b/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
+-index 2d2e483..b3dc263 100644
++index 2d2e483..1ffefdb 100644
+ --- a/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
+ +++ b/arch/arm/boot/dts/imx6qdl-sabresd.dtsi
+ @@ -11,7 +11,7 @@
+@@ -38,7 +38,33 @@
+  		};
+  	};
+  
+-@@ -95,7 +95,7 @@
++@@ -49,7 +49,7 @@
++ 		compatible = "gpio-leds";
++ 
++ 		charger-led {
++-			gpios = <&gpio1 2 0>;
+++			//gpios = <&gpio1 2 0>;
++ 			linux,default-trigger = "max8903-charger-charging";
++ 			retain-state-suspended;
++ 		};
++@@ -80,7 +80,7 @@
++ 			regulator-name = "usb_h1_vbus";
++ 			regulator-min-microvolt = <5000000>;
++ 			regulator-max-microvolt = <5000000>;
++-			gpio = <&gpio1 29 0>;
+++			//gpio = <&gpio1 29 0>;
++ 			enable-active-high;
++ 		};
++ 
++@@ -88,14 +88,14 @@
++ 			compatible = "regulator-fixed";
++ 			reg = <2>;
++ 			regulator-name = "wm8962-supply";
++-			gpio = <&gpio4 10 0>;
+++			//gpio = <&gpio4 10 0>;
++ 			enable-active-high;
++ 		};
++ 
+  		reg_mipi_dsi_pwr_on: mipi_dsi_pwr_on {
+  			compatible = "regulator-fixed";
+  			regulator-name = "mipi_dsi_pwr_on";
+@@ -52,29 +78,36 @@
+  		power {
+  			label = "Power Button";
+ -			gpios = <&gpio3 29 1>;
+-+			//gpios = <&gpio3 29 1>;
+++			gpios = <&gpio1 29 1>;// gpio29
+  			gpio-key,wakeup;
+  			linux,code = <KEY_POWER>;
+  		};
+-@@ -126,7 +126,7 @@
++@@ -126,34 +126,51 @@
+  		volume-up {
+  			label = "Volume Up";
+  			gpios = <&gpio1 4 1>;
+ -			gpio-key,wakeup;
++-			linux,code = <KEY_VOLUMEUP>;
+ +			//gpio-key,wakeup;
+- 			linux,code = <KEY_VOLUMEUP>;
+++			//linux,code = <KEY_VOLUMEUP>;
+++			linux,code = <KEY_F1>;
+  		};
+  
+-@@ -136,24 +136,38 @@
++ 		volume-down {
++ 			label = "Volume Down";
++ 			gpios = <&gpio1 5 1>;
+  			gpio-key,wakeup;
+- 			linux,code = <KEY_VOLUMEDOWN>;
+- 		};
++-			linux,code = <KEY_VOLUMEDOWN>;
+++			//linux,code = <KEY_VOLUMEDOWN>;
+++			linux,code = <KEY_F2>;
+++		};
+ +		backlight-change {
+ +			label = "backlight change";
+ +			gpios = <&gpio6 10 1>;
+ +			gpio-key,wakeup;
+-+			linux,code = <KEY_VOLUMEDOWN>;
+-+		};
+++			//linux,code = <KEY_VOLUMEDOWN>;
+++			linux,code = <KEY_F3>;
++ 		};
+  	};
+ -
+ +//david_wang
+@@ -110,7 +143,7 @@
+  			"CPU-Playback", "ASRC-Playback",
+  			"Playback", "CPU-Playback",
+  			"ASRC-Capture", "CPU-Capture",
+-@@ -162,6 +176,8 @@
++@@ -162,6 +179,8 @@
+  		mux-ext-port = <3>;
+  		hp-det-gpios = <&gpio7 8 1>;
+  		mic-det-gpios = <&gpio1 9 1>;
+@@ -119,7 +152,7 @@
+  	};
+  
+  	sound-hdmi {
+-@@ -178,7 +194,7 @@
++@@ -178,7 +197,7 @@
+  		default_bpp = <16>;
+  		int_clk = <0>;
+  		late_init = <0>;
+@@ -128,17 +161,17 @@
+  	};
+  
+  	mxcfb2: fb@1 {
+-@@ -229,6 +245,9 @@
++@@ -229,6 +248,9 @@
+  		brightness-levels = <0 4 8 16 32 64 128 255>;
+  		default-brightness-level = <7>;
+  		status = "okay";
+ +                //fj_ltls add panel_en 20160328
+ +                enable-gpios = <&gpio1 30 0>;
+-+		mcu-commmunication = <&gpio1 2 0>;
+++		mcu-commmunication = <&gpio1 2 0>;// gpio2
+  	};
+  
+  	v4l2_cap_0 {
+-@@ -254,7 +273,7 @@
++@@ -254,7 +276,7 @@
+  
+  	mipi_dsi_reset: mipi-dsi-reset {
+  		compatible = "gpio-reset";
+@@ -147,7 +180,7 @@
+  		reset-delay-us = <50>;
+  		#reset-cells = <0>;
+  	};
+-@@ -264,11 +283,44 @@
++@@ -264,11 +286,44 @@
+  	pinctrl-names = "default";
+  	pinctrl-0 = <&pinctrl_audmux>;
+  	status = "okay";
+@@ -194,7 +227,7 @@
+  };
+  
+  &clks {
+-@@ -306,11 +358,13 @@
++@@ -306,11 +361,13 @@
+  	pinctrl-names = "default";
+  	pinctrl-0 = <&pinctrl_i2c1>;
+  	status = "okay";
+@@ -211,7 +244,7 @@
+  		DCVDD-supply = <&reg_audio>;
+  		DBVDD-supply = <&reg_audio>;
+  		AVDD-supply = <&reg_audio>;
+-@@ -319,15 +373,19 @@
++@@ -319,15 +376,19 @@
+  		PLLVDD-supply = <&reg_audio>;
+  		SPKVDD1-supply = <&reg_audio>;
+  		SPKVDD2-supply = <&reg_audio>;
+@@ -237,7 +270,7 @@
+         };
+  
+  	mma8451@1c {
+-@@ -341,6 +399,25 @@
++@@ -341,6 +402,25 @@
+  		interrupt-route = <1>;
+  	};
+  
+@@ -263,7 +296,7 @@
+  	ov564x: ov564x@3c {
+  		compatible = "ovti,ov564x";
+  		reg = <0x3c>;
+-@@ -358,6 +435,7 @@
++@@ -358,6 +438,7 @@
+  		mclk = <24000000>;
+  		mclk_source = <0>;
+  	};
+@@ -271,16 +304,25 @@
+  };
+  
+  &i2c2 {
+-@@ -378,7 +456,7 @@
++@@ -378,7 +459,7 @@
+  		interrupts = <26 2>;
+  		work-mode = <1>;/*DCM mode*/
+  	};
+ -
+-+/*
+++#if 1
+  	pmic: pfuze100@08 {
+  		compatible = "fsl,pfuze100";
+  		reg = <0x08>;
+-@@ -478,23 +556,7 @@
++@@ -447,6 +528,8 @@
++ 			vgen1_reg: vgen1 {
++ 				regulator-min-microvolt = <800000>;
++ 				regulator-max-microvolt = <1550000>;
+++				regulator-boot-on;
+++				regulator-always-on;
++ 			};
++ 
++ 			vgen2_reg: vgen2 {
++@@ -478,23 +561,7 @@
+  			};
+  		};
+  	};
+@@ -301,11 +343,11 @@
+ -		mclk_source = <0>;
+ -	};
+ -
+-+*/
+++#endif
+  	egalax_ts@04 {
+  		compatible = "eeti,egalax_ts";
+  		reg = <0x04>;
+-@@ -503,6 +565,15 @@
++@@ -503,6 +570,15 @@
+  		wakeup-gpios = <&gpio6 8 0>;
+  	};
+  
+@@ -321,7 +363,7 @@
+  };
+  
+  &i2c3 {
+-@@ -537,6 +608,16 @@
++@@ -537,6 +613,16 @@
+  		interrupt-parent = <&gpio3>;
+  		interrupts = <9 2>;
+  	};
+@@ -338,7 +380,7 @@
+  };
+  
+  &iomuxc {
+-@@ -546,6 +627,8 @@
++@@ -546,17 +632,18 @@
+  	imx6qdl-sabresd {
+  		pinctrl_hog: hoggrp {
+  			fsl,pins = <
+@@ -347,10 +389,12 @@
+  				MX6QDL_PAD_NANDF_D0__GPIO2_IO00 0x80000000
+  				MX6QDL_PAD_NANDF_D1__GPIO2_IO01 0x80000000
+  				MX6QDL_PAD_NANDF_D2__GPIO2_IO02 0x80000000
+-@@ -554,9 +637,9 @@
++ 				MX6QDL_PAD_NANDF_D3__GPIO2_IO03 0x80000000
++ 				MX6QDL_PAD_GPIO_0__CCM_CLKO1    0x130b0
+  				MX6QDL_PAD_NANDF_CLE__GPIO6_IO07 0x80000000
+- 				MX6QDL_PAD_NANDF_ALE__GPIO6_IO08 0x80000000
+- 				MX6QDL_PAD_ENET_TXD1__GPIO1_IO29 0x80000000
++-				MX6QDL_PAD_NANDF_ALE__GPIO6_IO08 0x80000000
++-				MX6QDL_PAD_ENET_TXD1__GPIO1_IO29 0x80000000
+++				MX6QDL_PAD_NANDF_ALE__GPIO6_IO08 0x80000000				
+ +				MX6QDL_PAD_ENET_TXD0__GPIO1_IO30 0x80000000
+  				MX6QDL_PAD_EIM_D22__GPIO3_IO22  0x80000000
+ -				MX6QDL_PAD_ENET_CRS_DV__GPIO1_IO25 0x80000000
+@@ -359,17 +403,18 @@
+  				MX6QDL_PAD_EIM_CS1__GPIO2_IO24 0x80000000
+  				MX6QDL_PAD_ENET_RXD0__GPIO1_IO27 0x80000000
+  				MX6QDL_PAD_EIM_A25__GPIO5_IO02 0x80000000
+-@@ -572,6 +655,9 @@
++@@ -572,6 +659,10 @@
+  				MX6QDL_PAD_NANDF_CS1__GPIO6_IO14 0x80000000
+  				MX6QDL_PAD_NANDF_CS2__GPIO6_IO15 0x80000000
+  				MX6QDL_PAD_NANDF_CS3__GPIO6_IO16 0x80000000
+ +				MX6QDL_PAD_GPIO_2__GPIO1_IO02 0x80000000
+ +				MX6QDL_PAD_NANDF_WP_B__GPIO6_IO09 0x80000000
+ +				MX6QDL_PAD_NANDF_D4__GPIO2_IO04 0x80000000
+++				MX6QDL_PAD_KEY_COL2__GPIO4_IO10 0x80000000
+  			>;
+  		};
+  
+-@@ -619,9 +705,26 @@
++@@ -619,9 +710,27 @@
+  			>;
+  		};
+  
+@@ -393,11 +438,12 @@
+  			fsl,pins = <
+ -				MX6QDL_PAD_EIM_D29__GPIO3_IO29 0x80000000
+ +				//MX6QDL_PAD_EIM_D29__GPIO3_IO29 0x80000000
+++				MX6QDL_PAD_ENET_TXD1__GPIO1_IO29 0x80000000
+ +				MX6QDL_PAD_NANDF_RB0__GPIO6_IO10  0x80000000
+  				MX6QDL_PAD_GPIO_4__GPIO1_IO04  0x80000000
+  				MX6QDL_PAD_GPIO_5__GPIO1_IO05  0x80000000
+  			>;
+-@@ -724,6 +827,32 @@
++@@ -724,6 +833,32 @@
+  				MX6QDL_PAD_CSI0_DAT11__UART1_RX_DATA	0x1b0b1
+  			>;
+  		};
+@@ -430,7 +476,7 @@
+  
+  		pinctrl_uart5_1: uart5grp-1 {
+  			fsl,pins = <
+-@@ -743,6 +872,7 @@
++@@ -743,6 +878,7 @@
+  			>;
+  		};
+  
+@@ -438,7 +484,7 @@
+  		pinctrl_usbotg: usbotggrp {
+  			fsl,pins = <
+  				MX6QDL_PAD_ENET_RX_ER__USB_OTG_ID	0x17059
+-@@ -757,7 +887,7 @@
++@@ -757,7 +893,7 @@
+  				MX6QDL_PAD_SD2_DAT1__SD2_DATA1		0x17059
+  				MX6QDL_PAD_SD2_DAT2__SD2_DATA2		0x17059
+  				MX6QDL_PAD_SD2_DAT3__SD2_DATA3		0x17059
+@@ -447,7 +493,7 @@
+  				MX6QDL_PAD_NANDF_D5__SD2_DATA5		0x17059
+  				MX6QDL_PAD_NANDF_D6__SD2_DATA6		0x17059
+  				MX6QDL_PAD_NANDF_D7__SD2_DATA7		0x17059
+-@@ -809,10 +939,28 @@
++@@ -809,10 +945,28 @@
+  	status = "okay";
+  };
+  
+@@ -477,7 +523,7 @@
+  };
+  
+  &hdmi_audio {
+-@@ -839,46 +987,80 @@
++@@ -839,46 +993,80 @@
+  
+  &ldb {
+  	status = "okay";
+@@ -573,7 +619,7 @@
+  			};
+  		};
+  	};
+-@@ -904,6 +1086,7 @@
++@@ -904,6 +1092,7 @@
+  &pcie {
+  	power-on-gpio = <&gpio3 19 0>;
+  	reset-gpio = <&gpio7 12 0>;
+@@ -581,7 +627,7 @@
+  	status = "okay";
+  };
+  
+-@@ -923,6 +1106,27 @@
++@@ -923,6 +1112,27 @@
+  	pinctrl-0 = <&pinctrl_uart1>;
+  	status = "okay";
+  };
+@@ -609,7 +655,7 @@
+  
+  &usbh1 {
+  	vbus-supply = <&reg_usb_h1_vbus>;
+-@@ -945,7 +1149,7 @@
++@@ -945,7 +1155,7 @@
+  	pinctrl-0 = <&pinctrl_usdhc2>;
+  	bus-width = <8>;
+  	cd-gpios = <&gpio2 2 0>;
+@@ -618,7 +664,7 @@
+  	no-1-8-v;
+  	keep-power-in-suspend;
+  	enable-sdio-wakeup;
+-@@ -957,7 +1161,7 @@
++@@ -957,7 +1167,7 @@
+  	pinctrl-0 = <&pinctrl_usdhc3>;
+  	bus-width = <8>;
+  	cd-gpios = <&gpio2 0 0>;
+@@ -865,6 +911,19 @@
+  MODULE_DESCRIPTION("User-space I/O driver support for HID subsystem");
+ -MODULE_ALIAS_MISCDEV(UHID_MINOR);
+ -MODULE_ALIAS("devname:" UHID_NAME);
++diff --git a/drivers/input/keyboard/gpio_keys.c b/drivers/input/keyboard/gpio_keys.c
++index 8f8f93b..4166ec6 100644
++--- a/drivers/input/keyboard/gpio_keys.c
+++++ b/drivers/input/keyboard/gpio_keys.c
++@@ -383,7 +383,7 @@ static void gpio_keys_irq_timer(unsigned long _data)
++ 
++ 	spin_lock_irqsave(&bdata->lock, flags);
++ 	if (bdata->key_pressed) {
++-		input_event(input, EV_KEY, bdata->button->code, 0);
+++		input_event(input, EV_KEY, bdata->button->code, 0);//fj_ltls
++ 		input_sync(input);
++ 		bdata->key_pressed = false;
++ 	}
+ diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
+ index e013025..aa9f4ef 100644
+ --- a/drivers/input/touchscreen/Kconfig
+@@ -1384,7 +1443,7 @@
+  		if (intfdata->suspended) {
+  			usb_anchor_urb(this_urb, &portdata->delayed);
+ diff --git a/drivers/video/backlight/backlight.c b/drivers/video/backlight/backlight.c
+-index 7e4667a..57a455d 100644
++index 7e4667a..0f35788 100644
+ --- a/drivers/video/backlight/backlight.c
+ +++ b/drivers/video/backlight/backlight.c
+ @@ -21,6 +21,15 @@
+@@ -1393,7 +1452,7 @@
+  
+ +//==================================================================================
+ +//fj_ltls add 20160408
+-+#define BACKLIGHT_DEBUG_FUNC_ON    1
+++#define BACKLIGHT_DEBUG_FUNC_ON    0
+ +#define BACKLIGHT_DEBUG_FUNC()               do{\
+ +                                         if(BACKLIGHT_DEBUG_FUNC_ON)\
+ +                                         printk("<<-backlight-FUNC->> Func:%s@Line:%d\n",__func__,__LINE__);\
+@@ -1479,7 +1538,7 @@
+  	if (bd->ops && bd->ops->get_brightness)
+  		bd->props.brightness = bd->ops->get_brightness(bd);
+ diff --git a/drivers/video/backlight/pwm_bl.c b/drivers/video/backlight/pwm_bl.c
+-index b75201f..b62a54a 100644
++index b75201f..83c12ee 100644
+ --- a/drivers/video/backlight/pwm_bl.c
+ +++ b/drivers/video/backlight/pwm_bl.c
+ @@ -23,6 +23,13 @@
+@@ -1496,6 +1555,15 @@
+  
+  struct pwm_bl_data {
+  	struct pwm_device	*pwm;
++@@ -60,7 +67,7 @@ static void pwm_backlight_power_on(struct pwm_bl_data *pb, int brightness)
++ 		else
++ 			gpio_set_value(pb->enable_gpio, 1);
++ 	}
++-
+++	msleep(100);//fj_ltls add 20160516
++ 	pwm_enable(pb->pwm);
++ 	pb->enabled = true;
++ }
+ @@ -103,6 +110,8 @@ static int pwm_backlight_update_status(struct backlight_device *bl)
+  	int brightness = bl->props.brightness;
+  	int duty_cycle;
+@@ -1538,7 +1606,7 @@
+  
+  	if (!node)
+  		return -ENODEV;
+-@@ -164,6 +181,30 @@ static int pwm_backlight_parse_dt(struct device *dev,
++@@ -164,6 +181,31 @@ static int pwm_backlight_parse_dt(struct device *dev,
+  	if (!prop)
+  		return -EINVAL;
+  
+@@ -1557,6 +1625,7 @@
+ +	/* wake up controller via an falling edge on IRQ gpio. */
+ +	gpio_direction_output(gpio, 0);
+ +	gpio_set_value(gpio, 1);
+++	gpio_free(gpio);
+ +
+ +
+ +//*****************************************************************************
+@@ -1569,7 +1638,18 @@
+  	data->max_brightness = length / sizeof(u32);
+  
+  	/* read brightness levels from DT property */
+-@@ -365,14 +406,14 @@ static int pwm_backlight_suspend(struct device *dev)
++@@ -331,8 +373,8 @@ static int pwm_backlight_probe(struct platform_device *pdev)
++ 	}
++ 
++ 	bl->props.brightness = data->dft_brightness;
++-	backlight_update_status(bl);
++-
+++	//msleep(3000);//fj_ltls add 20160526
+++	//backlight_update_status(bl);
++ 	platform_set_drvdata(pdev, bl);
++ 	return 0;
++ 
++@@ -365,14 +407,14 @@ static int pwm_backlight_suspend(struct device *dev)
+  	struct backlight_device *bl = dev_get_drvdata(dev);
+  	struct pwm_bl_data *pb = bl_get_data(bl);
+  
+@@ -1586,7 +1666,7 @@
+  	return 0;
+  }
+  
+-@@ -381,7 +422,6 @@ static int pwm_backlight_resume(struct device *dev)
++@@ -381,7 +423,6 @@ static int pwm_backlight_resume(struct device *dev)
+  	struct backlight_device *bl = dev_get_drvdata(dev);
+  
+  	backlight_update_status(bl);
